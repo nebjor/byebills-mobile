@@ -5,7 +5,6 @@ import { Linking, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Button, Screen, Text } from "@/components";
 import { useBilling, type Plan } from "@/data/billingStore";
-import { useUser } from "@/data/userStore";
 import { track } from "@/lib/analytics";
 import { radii, useTheme, useThemedStyles, type Palette } from "@/theme";
 
@@ -27,7 +26,6 @@ export default function Paywall() {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const { activatePro, restore, isPro, isTrialActive, trialDaysLeft } = useBilling();
-  const { user } = useUser();
   const { reason } = useLocalSearchParams<{ reason?: string }>();
 
   const dailyCap = reason === "daily_cap";
@@ -53,19 +51,9 @@ export default function Paywall() {
     track("paywall_restore");
   };
 
-  // Pro hit the daily ceiling -> ask about a business plan (prefilled email).
-  const onBusinessContact = () => {
-    track("paywall_business_contact");
-    const subject = encodeURIComponent("byeBills — Business plan enquiry");
-    const body = encodeURIComponent(
-      `hey there,\nwe hit the rate limit of 200/day, we would like to know about a business plan.\n\nkind regards,\n${user.name}`,
-    );
-    Linking.openURL(`mailto:demo@example.com?subject=${subject}&body=${body}`).catch(() => {});
-  };
-
   const title = dailyCap ? `Daily limit${"\n"}reached` : `Unlimited scans${"\n"}with Pro`;
   const subtitle = businessCap
-    ? "You've hit the Pro limit of 200 scans today. Contact us about a business plan for higher limits."
+    ? "You've hit the Pro limit of 200 scans today. Your scans reset tomorrow."
     : trialCap
       ? "You've hit today's limit of 30 scans on your free trial. Upgrade to Pro to scan more."
       : isPro
@@ -97,10 +85,7 @@ export default function Paywall() {
           {subtitle}
         </Text>
 
-        {businessCap ? (
-          // Pro user over the daily ceiling — business-plan contact only.
-          <Button label="Contact us" fullWidth onPress={onBusinessContact} />
-        ) : (
+        {businessCap ? null : (
           <>
             <View style={styles.benefits}>
               {BENEFITS.map((b) => (

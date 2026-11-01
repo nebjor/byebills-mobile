@@ -261,25 +261,6 @@ export default function Profile() {
             </View>
             <Button label="Update" size="sm" loading={checking} onPress={onCheckUpdate} />
           </View>
-          <View style={styles.divider} />
-          <Pressable
-            style={styles.row}
-            onPress={() =>
-              Linking.openURL(
-                "mailto:demo@example.com?subject=byeBills%20feedback&body=Hi%20Billie%2C%0A%0AMy%20feedback%3A%0A",
-              )
-            }
-          >
-            <View style={styles.iconWrap}>
-              <Text style={styles.icon}>💬</Text>
-            </View>
-            <Text weight="bold" style={[styles.rowLabel, styles.flex]}>
-              Give feedback
-            </Text>
-            <Text color={colors.ink400} style={styles.chevron}>
-              ›
-            </Text>
-          </Pressable>
         </Card>
 
         <Button label="Sign out" variant="destructive" fullWidth style={styles.signOut} onPress={onSignOut} />
